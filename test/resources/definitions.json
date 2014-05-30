@@ -1,0 +1,162 @@
+{
+  "title": "Search Filter",
+  "description": "A filter for restricting the results of a search.",
+  "oneOf": [
+    { "$ref": "#/definitions/value_filter" },
+    { "$ref": "#/definitions/range_filter" },
+    { "$ref": "#/definitions/any_filter" },
+    { "$ref": "#/definitions/ids_filter" },
+    { "$ref": "#/definitions/not_filter" },
+    { "$ref": "#/definitions/and_filter" },
+    { "$ref": "#/definitions/or_filter" }
+  ],
+  "definitions": {
+    "value_filter": {
+      "title": "Value Filter",
+      "description": "A filter for matching a field against a value.",
+      "properties": {
+        "field": {
+          "title": "Field",
+          "description": "The name of the field to filter.",
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "title": "Value",
+          "description": "The value to match against.",
+          "type": ["string", "number", "boolean", "null", "array"]
+        }
+      },
+      "required": ["field", "value"],
+      "additionalProperties": false
+    },
+    "range_filter": {
+      "title": "Range Filter",
+      "description": "A filter for matching between a range of numeric values.",
+      "properties": {
+        "field": {
+          "title": "Field",
+          "description": "The name of the field to filter.",
+          "type": "string",
+          "minLength": 1
+        },
+        "min_value": {
+          "title": "Minimum Value",
+          "description": "The minimum value in the range. If null or not provided, values up to the maximum will be matched.",
+          "type": ["number", "null"]
+        },
+        "max_value": {
+          "title": "Maximum Value",
+          "description": "The maximum value in the range. If null or not provided, values from the minimum will be matched.",
+          "type": ["number", "null"]
+        },
+        "min_inclusive": {
+          "title": "Minimum Inclusive",
+          "description": "Indicates if the range should include the minimum value.",
+          "type": "boolean",
+          "default": true
+        },
+        "max_inclusive": {
+          "title": "Maximum Inclusive",
+          "description": "Indicates if the range should include the maximum value.",
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": ["field"],
+      "anyOf": [
+        { "required": ["min_value"] },
+        { "required": ["max_value"] }
+      ],
+      "additionalProperties": false
+    },
+    "any_filter": {
+      "title": "Any Filter",
+      "description": "A filter that matches any of the provided values.",
+      "properties": {
+        "field": {
+          "description": "The name of the field to filter.",
+          "type": "string",
+          "minLength": 1
+        },
+        "values": {
+          "title": "Values",
+          "description": "The values to match against. A result will be included if the field matches one or more of the values.",
+          "type": "array",
+          "items": {
+            "type": ["string", "number", "boolean", "null"]
+          },
+          "minItems": 1
+        }
+      },
+      "required": ["field", "terms"],
+      "additionalProperties": false
+    },
+    "ids_filter": {
+      "title": "Ids Filter",
+      "description": "A filter that restricts results to those with the given ids.",
+      "properties": {
+        "ids": {
+          "title": "Ids",
+          "description": "The ids to match against.",
+          "type": "array",
+          "oneOf": [
+            {
+              "items": { "type": "integer" }
+            },
+            {
+              "items": { "type": "string" }
+            }
+          ],
+          "minItems": 1
+        }
+      },
+      "required": ["field", "ids"],
+      "additionalProperties": false
+    },
+    "not_filter": {
+      "title": "Not Filter",
+      "description": "A filter that negates another filter.",
+      "properties": {
+        "not": {
+          "title": "Not",
+          "description": "The filter to negate.",
+          "$ref": "#"
+        }
+      },
+      "additionalProperties": false
+    },
+    "and_filter": {
+      "title": "And Filter",
+      "description": "A filter that joins two or more filters with an AND operator.",
+      "properties": {
+        "and": {
+          "title": "And",
+          "description": "A list of filters to join.",
+          "type": "array",
+          "items": {
+            "$ref": "#"
+          },
+          "minItems": 2
+        }
+      },
+      "additionalProperties": false
+    },
+    "or_filter": {
+      "title": "Or Filter",
+      "description": "A filter that joins two or more filters with an OR operator.",
+      "properties": {
+        "or": {
+          "title": "Or",
+          "description": "A list of filters to join.",
+          "type": "array",
+          "items": {
+            "$ref": "#"
+          },
+          "minItems": 2
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
